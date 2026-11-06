@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a1222" />
+  <meta name="description" content="บันทึก Book ID จาก Fanqie และ Changdu ลง GitHub แบบไม่ซ้ำ ใช้ได้ทั้งคอมและมือถือ" />
+  <title>Novel ID Vault — จัดเก็บ Book ID นิยาย</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Novel ID Vault" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{color-scheme:dark;--bg:#080f1e;--surface:#0e192c;--surface2:#111f34;--stroke:#26354b;--stroke2:#33445e;--text:#e9f1ff;--muted:#93a4ba;--blue:#5c9cff;--teal:#58e5c0;--amber:#ffd38b;--red:#ff8d9a;--radius:22px;--shadow:0 18px 50px rgba(0,0,0,.21)}
+    *{box-sizing:border-box}html{min-height:100%}body{margin:0;min-height:100vh;background:radial-gradient(ellipse 68% 36% at 15% -12%,#123b61 0%,transparent 78%),radial-gradient(ellipse 45% 30% at 100% 0%,#1a2351 0%,transparent 85%),var(--bg);font:14px/1.65 "Inter","Noto Sans Thai",system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}input,textarea{color:var(--text)}a{color:var(--teal)}.shell{max-width:1260px;margin:auto;padding:30px 28px 56px}
+    .header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:37px}.brand{display:flex;align-items:center;gap:14px}.brand-icon{width:54px;height:54px;display:grid;place-items:center;border-radius:17px;background:linear-gradient(145deg,#10243d,#0d1730);border:1px solid #2e5075;box-shadow:0 12px 30px rgba(57,131,218,.18), inset 0 0 0 1px rgba(142,232,214,.08);overflow:hidden;flex-shrink:0}.brand-icon img{width:100%;height:100%;object-fit:cover;display:block}.brand-name{font-size:18px;line-height:1.2;font-weight:800;letter-spacing:-.4px}.brand-caption{font-size:11px;color:var(--muted);font-weight:650;letter-spacing:1.3px;margin-top:5px}.header-actions{display:flex;align-items:center;gap:10px}.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--stroke);background:#0e1b2b;padding:8px 13px;border-radius:100px;font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}.dot{width:7px;height:7px;border-radius:100px;background:#778399;box-shadow:0 0 0 4px #71849f11}.pill.online{color:#94f2ce;border-color:#2c7868;background:#102c2a}.pill.online .dot{background:#58e5c0;box-shadow:0 0 0 4px #58e5c025}
+    .icon-btn,.soft-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--stroke2);background:#142239;color:var(--text);border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;transition:.16s}.icon-btn:hover,.soft-btn:hover{border-color:#5983b8;background:#1b304b}.icon{width:17px;height:17px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+    .hero{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;padding:29px 34px;border:1px solid #284968;border-radius:26px;background:linear-gradient(110deg,#162c4a 0%,#10213b 53%,#12253b 100%);box-shadow:var(--shadow)}.hero::after{content:"";position:absolute;right:-80px;top:-110px;width:390px;height:390px;border-radius:50%;background:radial-gradient(circle,#5c9cff1f,transparent 68%);pointer-events:none}.eyebrow{color:#82f3da;letter-spacing:2px;font-weight:800;font-size:10px;margin-bottom:7px}.hero h1{font-size:clamp(24px,3vw,35px);line-height:1.36;letter-spacing:-.9px;margin:0 0 10px;font-weight:800}.hero p{margin:0;color:#a9bdd7;font-size:13px;max-width:630px}.hero-ornament{width:118px;height:118px;display:grid;place-items:center;background:linear-gradient(160deg,#153355,#0e1d37);box-shadow:inset 0 0 0 1px #76c9ff33, 0 16px 36px rgba(17,35,68,.34);border-radius:32px;transform:rotate(-10deg);flex-shrink:0;padding:14px}.hero-ornament img{width:100%;height:100%;object-fit:contain;display:block;transform:rotate(10deg)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:21px}.stat{border-radius:18px;border:1px solid var(--stroke);background:linear-gradient(160deg,#101e33,#0e182a);padding:18px 21px;min-width:0}.stat-head{display:flex;gap:9px;align-items:center;font-weight:650;font-size:12px;color:var(--muted)}.stat-head svg{color:var(--blue)}.stat-number{font-size:29px;font-weight:800;letter-spacing:-.9px;margin-top:5px;line-height:1.4;font-variant-numeric:tabular-nums}.stat:nth-child(2) .stat-number{color:var(--teal)}.stat:nth-child(3) .stat-number{color:var(--amber)}
+    .grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:20px;align-items:start}.panel{border:1px solid var(--stroke);background:linear-gradient(165deg,#101c2f,#0d1829);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:start;gap:12px;padding:24px 25px 16px}.panel-title{font-size:16px;font-weight:800;letter-spacing:-.3px;margin:0}.panel-sub{font-size:12px;color:var(--muted);margin:5px 0 0}.tiny-mark{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:9px;background:#21344b;color:#b7cbe2;font-size:11px;font-weight:700;white-space:nowrap}.content-pad{padding:0 25px 25px}.textarea-wrap{position:relative}.paste-input{width:100%;height:273px;resize:vertical;min-height:170px;outline:none;border:1px solid #32435b;border-radius:15px;background:#091527;color:#dfebff;padding:18px 18px 45px;font-size:12.5px;line-height:1.85;font-family:"Inter",ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere;transition:border .2s}.paste-input:focus{border-color:var(--blue)}.paste-input::placeholder{color:#5d708a}.textarea-count{position:absolute;right:15px;bottom:14px;color:#8195b0;font-size:11px;font-weight:700;pointer-events:none}.input-tools{display:flex;gap:9px;margin-top:11px;flex-wrap:wrap}.preview{margin-top:20px;border:1px solid #2a3d54;background:#0a192a;padding:15px;border-radius:14px;min-height:106px}.preview-head{display:flex;justify-content:space-between;gap:7px;align-items:center;font-size:12px;font-weight:700;margin-bottom:10px}.preview-count{color:var(--teal);font-size:11px}.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;border:1px solid #314f63;background:#163042;color:#b8e9ea;padding:6px 9px;border-radius:9px}.chip.muted{color:var(--muted);background:#162137;border-color:#2c3e55}.preview-empty{font-size:12px;color:#70869f;margin:0}.notice{display:flex;gap:10px;align-items:start;color:#a5b5cb;font-size:11px;margin:15px 0 18px;line-height:1.75}.notice svg{flex-shrink:0;color:#74a6eb;margin-top:2px}.primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(110deg,#68a5ff,#63dcd1);color:#082136;border:0;border-radius:13px;padding:14px 20px;font-weight:800;font-size:13px;box-shadow:0 8px 22px #54aaff25;transition:filter .2s,transform .2s}.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}.primary:disabled:hover{transform:none;filter:none}.save-row{display:flex;gap:10px;align-items:center}.save-row .primary{flex:1}.save-row .soft-btn{padding:13px 14px}
+    .history-head{padding:24px 24px 16px}.history-actions{display:flex;gap:8px}.search{display:flex;align-items:center;gap:10px;border:1px solid #314059;background:#0a1627;border-radius:12px;margin:0 24px 16px;padding:0 13px}.search svg{color:#7188a5}.search input{width:100%;border:0;background:transparent;outline:none;padding:12px 0;font-size:12px}.search input::placeholder{color:#758aa6}.list-head{display:flex;justify-content:space-between;font-size:10px;color:#7890aa;font-weight:750;letter-spacing:.7px;padding:0 30px 10px;text-transform:uppercase}.book-list{max-height:595px;overflow:auto;min-height:135px;border-top:1px solid #253349}.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:13px 24px;border-bottom:1px solid #213149}.item:hover{background:#16243a}.item-main{display:flex;align-items:center;min-width:0;gap:12px}.row-number{font-size:11px;min-width:26px;color:#7186a3;font-variant-numeric:tabular-nums}.book-symbol{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;border:1px solid #244a63;border-radius:10px;background:#142c41;color:#82ddff}.book-details{min-width:0}.book-id{font-weight:750;font-size:12px;letter-spacing:.2px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.id-copy-button{display:flex;align-items:center;gap:6px;max-width:100%;padding:2px 0;border:0;background:transparent;color:#d0e8ff;text-align:left}.id-copy-button:hover{color:var(--teal);text-decoration:underline;text-underline-offset:4px}.id-copy-button .icon{width:13px;height:13px;opacity:.65}.book-meta{font-size:10px;color:#6e879f;margin-top:2px}.book-meta.done{color:#7ce7c5}.mark-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0;min-width:110px;padding:9px 11px;border:1px solid #34506b;background:#152b43;color:#afc7e0;border-radius:11px;font-size:11px;font-weight:750;transition:background .14s,border-color .14s}.mark-btn:hover{background:#204160;border-color:#5685ad}.mark-btn.done{background:#123b35;color:#8ef5cc;border-color:#2e826a}.mark-btn.done:hover{background:#1b5148}.mark-btn .icon{width:15px;height:15px}.history-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:0 24px 15px}.copy-progress{font-size:11px;font-weight:750;color:#7ee1bd}.copy-filter{font-size:11px;border:1px solid #344960;background:#14283d;color:#e7f1ff;border-radius:10px;padding:7px 10px;max-width:100%}.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;color:#70849f;font-size:12px;padding:47px 15px}.empty svg{color:#466581}.empty b{color:#afc0d8;font-size:13px}.item-main{flex:1;min-width:0}.list-footer{display:flex;justify-content:space-between;align-items:center;gap:7px;border-top:1px solid #26344a;padding:15px 24px 21px;color:#8296ad;font-size:11px}.load-btn{border:1px solid #2a405b;background:#18263b;color:#bdd3ea;border-radius:8px;padding:6px 12px;font-size:11px}.load-btn:hover{background:#223a56}.footer{text-align:center;font-size:11px;color:#647b94;margin-top:28px}.footer strong{color:#95abc5}
+    dialog{border:1px solid #334862;background:#101d31;color:var(--text);border-radius:24px;box-shadow:0 28px 80px #000b;width:min(510px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow:auto;padding:0}dialog::backdrop{background:#020814cf;backdrop-filter:blur(7px)}.modal-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:24px 25px 16px}.modal-head h2{font-size:19px;margin:0}.modal-head p{font-size:12px;color:var(--muted);margin:5px 0 0}.modal-body{padding:0 25px 25px}.field{display:block;margin-top:15px}.field-title{display:block;color:#b1c5da;font-size:12px;font-weight:700;margin-bottom:7px}.field input{width:100%;padding:11px 13px;border-radius:11px;border:1px solid #374760;background:#0a1728;outline:none;font-size:13px}.field input:focus{border-color:var(--blue)}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field-help{font-size:10px;color:#8096ac;margin-top:5px}.secret-row{display:flex;gap:8px}.secret-row input{min-width:0;flex:1}.secret-toggle{padding:0 11px;border:1px solid #40516b;border-radius:10px;color:#a8c0d6;background:#17283d}.checkbox-line{display:flex;align-items:start;gap:10px;color:#a1b5ca;font-size:11px;margin:12px 0 16px}.checkbox-line input{accent-color:#5c9cff;margin-top:3px}.warning{background:#4a382027;border:1px solid #785c38;color:#e7c99a;border-radius:12px;padding:12px;font-size:11px;line-height:1.75;margin:16px 0}.modal-actions{display:flex;gap:9px;margin-top:21px}.modal-actions .primary{flex:1}.modal-actions .soft-btn{padding:13px}.modal-link{display:block;margin-top:15px;font-size:11px}.toast{position:fixed;z-index:60;bottom:24px;left:50%;transform:translate(-50%,14px);padding:12px 17px;background:#193049;color:#e4f7ff;border:1px solid #49748c;border-radius:12px;box-shadow:0 12px 35px #0007;opacity:0;pointer-events:none;transition:.2s;max-width:min(550px,calc(100% - 35px));font-size:12px;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.error{background:#4a202c;border-color:#935064;color:#ffe1e4}
+    .splash-screen{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(ellipse 72% 42% at 50% 22%,rgba(80,170,255,.14) 0%,transparent 72%),linear-gradient(180deg,#08111f 0%,#07111d 100%);opacity:1;visibility:visible;transition:opacity .45s ease, visibility .45s ease}.splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}.splash-card{width:min(92vw,430px);padding:28px 24px;border-radius:28px;border:1px solid #284968;background:linear-gradient(160deg,rgba(18,35,59,.96),rgba(10,21,37,.96));box-shadow:0 22px 60px rgba(0,0,0,.38);text-align:center}.splash-logo-shell{width:112px;height:112px;margin:0 auto 18px;padding:10px;border-radius:28px;background:linear-gradient(145deg,#10243d,#0d1730);border:1px solid #2e5075;box-shadow:0 16px 34px rgba(57,131,218,.2);display:grid;place-items:center}.splash-logo-shell img{width:100%;height:100%;object-fit:contain;display:block}.splash-title{margin:0;font-size:26px;line-height:1.18;font-weight:800;letter-spacing:-.6px}.splash-sub{margin:8px 0 0;color:#95b3cf;font-size:13px;line-height:1.8}.splash-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:16px}.splash-badge{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:#10263d;border:1px solid #28527b;color:#afe8e6;font-size:11px;font-weight:700}.splash-spinner{width:30px;height:30px;margin:18px auto 0;border-radius:50%;border:3px solid rgba(92,156,255,.16);border-top-color:#61e0c7;border-right-color:#5c9cff;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:940px){.grid{grid-template-columns:1fr}.book-list{max-height:390px}.hero{padding:26px}.stats{gap:10px}}@media(max-width:570px){.shell{padding:18px 14px 40px}.header{margin-bottom:23px}.brand-icon{width:46px;height:46px}.brand-name{font-size:15px}.brand-caption{font-size:9px}.header-actions{gap:6px}.pill{font-size:0;padding:9px}.pill .dot{width:9px;height:9px}.header-actions .icon-btn{font-size:0;padding:10px}.hero{padding:22px 21px}.hero-ornament{display:none}.hero h1{font-size:25px}.hero p{font-size:11px}.stats{gap:8px}.stat{padding:14px 12px;border-radius:15px}.stat-head{font-size:10px;gap:6px}.stat-head svg{width:14px;height:14px}.stat-number{font-size:23px}.grid{gap:15px}.panel-head,.history-head{padding:21px 18px 15px}.content-pad{padding:0 18px 21px}.search{margin:0 18px 14px}.item{padding:12px 15px;gap:7px}.book-symbol{display:none}.row-number{min-width:20px}.item-main{gap:7px}.mark-btn{min-width:92px;font-size:10px;padding:8px 7px}.history-toolbar{padding:0 18px 13px}.list-footer{padding:14px 18px}.book-id{font-size:11px}.save-row .primary{font-size:12px;padding:13px 10px}.modal-body{padding:0 20px 22px}.modal-head{padding:21px 20px 14px}.splash-card{padding:24px 20px;border-radius:24px}.splash-logo-shell{width:94px;height:94px;border-radius:24px}.splash-title{font-size:22px}.splash-sub{font-size:12px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <!-- Icons use inline SVG: no external JavaScript dependencies. -->
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.88 1.88-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.02 1.56V21h-2.66v-.09A1.7 1.7 0 0 0 10.9 19.3a1.7 1.7 0 0 0-1.88.34l-.06.06-1.88-1.88.06-.06A1.7 1.7 0 0 0 7.48 15a1.7 1.7 0 0 0-1.56-1.02H5v-2.66h.09A1.7 1.7 0 0 0 6.7 9.9a1.7 1.7 0 0 0-.34-1.88L6.3 7.96l1.88-1.88.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 11.14 4.9V4h2.66v.09a1.7 1.7 0 0 0 1.42 1.61 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.88 1.88-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1.02H21v2.66h-.09A1.7 1.7 0 0 0 19.4 15Z"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M20 16.5A4.5 4.5 0 0 0 18 8h-1.1A6.4 6.4 0 0 0 4.7 9.7 4 4 0 0 0 5 18h6"/><path d="m12 15 3 3 5-6"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Zm-9 10 9 5 9-5M3 17l9 5 9-5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4.5V3h6v1.5M9 11h6M9 15h6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-5L4 8m0-4v4h4M4 13a8 8 0 0 0 14 5l2-2m0 4v-4h-4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.7" cy="10.7" r="6.7"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  </svg>
+  <div id="splashScreen" class="splash-screen" aria-hidden="true">
+    <div class="splash-card">
+      <div class="splash-logo-shell"><img src="logo-2d.png" alt="Novel ID Vault logo" /></div>
+      <h1 class="splash-title">Novel ID Vault</h1>
+      <p class="splash-sub">บันทึก Book ID จาก Fanqie และ Changdu แบบไม่ซ้ำ<br />ซิงก์ผ่าน GitHub และใช้งานได้ทั้งมือถือกับคอมพิวเตอร์</p>
+      <div class="splash-badges">
+        <span class="splash-badge">2D Modern Logo</span>
+        <span class="splash-badge">PC + Mobile</span>
+        <span class="splash-badge">GitHub Sync</span>
+      </div>
+      <div class="splash-spinner" aria-hidden="true"></div>
+    </div>
+  </div>
+  <main class="shell">
+    <header class="header">
+      <div class="brand"><div class="brand-icon"><img src="logo-2d.png" alt="Novel ID Vault logo" /></div><div><div class="brand-name">Novel ID Vault</div><div class="brand-caption">BOOK ID MANAGER</div></div></div>
+      <div class="header-actions"><div class="pill" id="connectionPill"><span class="dot"></span><span id="connectionText">ยังไม่เชื่อม GitHub</span></div><button class="icon-btn" id="settingsBtn" title="ตั้งค่า GitHub"><svg class="icon"><use href="#i-settings"/></svg> ตั้งค่า</button></div>
+    </header>
+
+    <section class="hero"><div><div class="eyebrow">YOUR NOVEL COLLECTION, ORGANIZED.</div><h1>เก็บ Book ID นิยาย<br />ง่าย ๆ ไม่ซ้ำกัน</h1><p>วางลิงก์ Fanqie หรือ Changdu หลายเรื่องพร้อมกัน • ตรวจสอบรายการซ้ำอัตโนมัติ • ซิงก์ GitHub ได้จากคอมพิวเตอร์และมือถือ</p></div><div class="hero-ornament"><img src="logo-2d.png" alt="Novel ID Vault logo" /></div></section>
+
+    <section class="stats" aria-label="สถิติ Book ID"><div class="stat"><div class="stat-head"><svg class="icon"><use href="#i-stack"/></svg> บันทึกแล้วทั้งหมด</div><div class="stat-number" id="totalCount">0</div></div><div class="stat"><div class="stat-head"><svg class="icon"><use href="#i-plus"/></svg> ตรวจพบรายการใหม่</div><div class="stat-number" id="newCount">0</div></div><div class="stat"><div class="stat-head"><svg class="icon"><use href="#i-check"/></svg> รายการซ้ำ</div><div class="stat-number" id="dupeCount">0</div></div></section>
+
+    <div class="grid"><section class="panel"><div class="panel-head"><div><h2 class="panel-title">เพิ่มลิงก์นิยาย</h2><p class="panel-sub">วางได้หลายลิงก์ บรรทัดละหนึ่งรายการ หรือใส่ Book ID โดยตรง</p></div><span class="tiny-mark">AUTO EXTRACT</span></div><div class="content-pad">
+      <div class="textarea-wrap"><textarea id="linkInput" class="paste-input" spellcheck="false" aria-label="วางลิงก์นิยาย" placeholder="https://fanqienovel.com/page/7132121215128308767&#10;https://fanqienovel.com/page/7358745778921147454?source=seo_fq_juhe&#10;https://changdunovel.com/ug/pages/book-share?book_id=7658239968585731096&#10;&#10;วางลิงก์ทั้งหมดของคุณตรงนี้..."></textarea><span class="textarea-count" id="lineCounter">0 บรรทัด</span></div>
+      <div class="input-tools"><button class="soft-btn" id="pasteBtn"><svg class="icon"><use href="#i-paste"/></svg> วางจากคลิปบอร์ด</button><button class="soft-btn" id="clearBtn"><svg class="icon"><use href="#i-x"/></svg> ล้างช่อง</button></div>
+      <div class="preview"><div class="preview-head"><span>ผลการสกัด Book ID</span><span class="preview-count" id="previewText">0 รายการ</span></div><div class="chips" id="previewChips"><p class="preview-empty">รอลิงก์ที่คุณวาง ระบบจะแสดง Book ID ที่ตรวจพบตรงนี้</p></div></div>
+      <div class="notice"><svg class="icon"><use href="#i-shield"/></svg><span>เก็บเฉพาะตัวเลข <strong>book_id</strong> ไม่เก็บ URL หรือข้อมูลบัญชีจากลิงก์แชร์ และจะไม่เพิ่ม ID ที่มีอยู่ใน GitHub แล้ว</span></div>
+      <div class="save-row"><button id="saveBtn" class="primary"><svg class="icon"><use href="#i-cloud"/></svg> บันทึกลง GitHub</button><button id="downloadBtn" class="soft-btn" title="ดาวน์โหลด JSON"><svg class="icon"><use href="#i-download"/></svg><span>JSON</span></button></div>
+    </div></section>
+
+    <section class="panel"><div class="panel-head history-head"><div><h2 class="panel-title">คลัง Book ID</h2><p class="panel-sub" id="historySub">รายการจากไฟล์ book_ids.json</p></div><div class="history-actions"><button class="icon-btn" id="refreshBtn" title="รีเฟรชจาก GitHub" aria-label="รีเฟรชจาก GitHub"><svg class="icon"><use href="#i-refresh"/></svg></button><button class="icon-btn" id="copyAllBtn" title="คัดลอก Book ID ทั้งหมด" aria-label="คัดลอก Book ID ทั้งหมด"><svg class="icon"><use href="#i-copy"/></svg></button></div></div>
+      <div class="search"><svg class="icon"><use href="#i-search"/></svg><input id="searchInput" type="search" placeholder="ค้นหาด้วย Book ID..." aria-label="ค้นหา Book ID" autocomplete="off" /></div>
+      <div class="history-toolbar"><span class="copy-progress" id="copyProgress">คัดลอกแล้ว 0 / 0</span><select class="copy-filter" id="copyFilter" aria-label="กรองตามสถานะการคัดลอก"><option value="all">ทั้งหมด</option><option value="uncopied">ยังไม่คัดลอก</option><option value="copied">คัดลอกแล้ว</option></select></div>
+      <div class="list-head"><span>กดเลขเพื่อคัดลอก</span><span>สถานะ</span></div><div id="bookList" class="book-list"><div class="empty"><svg class="icon" style="width:34px;height:34px"><use href="#i-book"/></svg><b>ยังไม่มีรายการ</b><span>เชื่อมต่อ GitHub แล้วเริ่มบันทึกได้เลย</span></div></div>
+      <div class="list-footer"><span id="shownCount">แสดง 0 รายการ</span><button class="load-btn" id="loadMoreBtn" hidden>ดูเพิ่มเติม</button></div>
+    </section></div>
+    <div class="footer">Built for <strong>Fanqie · Changdu</strong> &nbsp;|&nbsp; GitHub cloud storage &nbsp;|&nbsp; PC + Mobile</div>
+  </main>
+
+  <dialog id="settingsDialog"><div class="modal-head"><div><h2>เชื่อมต่อ GitHub</h2><p>ตั้งค่าครั้งแรกบนอุปกรณ์แต่ละเครื่อง</p></div><button class="icon-btn" id="closeSettingsBtn" aria-label="ปิด"><svg class="icon"><use href="#i-x"/></svg></button></div><form id="settingsForm" class="modal-body">
+    <div class="field-row"><label class="field"><span class="field-title">ชื่อผู้ใช้ GitHub (Owner)</span><input id="ownerInput" required autocomplete="off" placeholder="your-username" /></label><label class="field"><span class="field-title">ชื่อ Repository</span><input id="repoInput" required autocomplete="off" placeholder="novel-link-vault" /></label></div>
+    <label class="field"><span class="field-title">Branch (เว้นว่างเพื่อใช้ค่าเริ่มต้น)</span><input id="branchInput" autocomplete="off" placeholder="main" /><div class="field-help">ไฟล์ปลายทางคือ book_ids.json ที่รากของ Repository</div></label>
+    <label class="field"><span class="field-title">Fine-grained Personal Access Token</span><div class="secret-row"><input id="tokenInput" type="password" autocomplete="off" spellcheck="false" required placeholder="github_pat_..." /><button type="button" class="secret-toggle" id="toggleTokenBtn">แสดง</button></div><div class="field-help">จำกัด Repository ให้เหลือเฉพาะคลังนี้ และตั้ง Contents: Read and write</div></label>
+    <label class="checkbox-line"><input type="checkbox" id="rememberTokenInput" /><span>จดจำ Token บนอุปกรณ์นี้ (ใช้เฉพาะเครื่องส่วนตัวเท่านั้น เพราะ Token จะถูกเก็บในเบราว์เซอร์)</span></label>
+    <div class="warning">ห้ามใส่ Token ลงในโค้ด HTML หรืออัปโหลด Token ขึ้น GitHub โดยตรง เว็บไซต์นี้จะส่ง Token ไปยัง GitHub API เพื่ออ่านและบันทึกไฟล์เท่านั้น หาก Repository เป็น Public รายการ Book ID จะเปิดเผยต่อสาธารณะ</div>
+    <div class="modal-actions"><button type="submit" class="primary" id="connectBtn"><svg class="icon"><use href="#i-cloud"/></svg> เชื่อมต่อและโหลดข้อมูล</button><button type="button" class="soft-btn" id="disconnectBtn">ออกจากระบบ</button></div>
+    <a class="modal-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">สร้าง Fine-grained Token ที่ GitHub</a>
+  </form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+  'use strict';
+  (() => {
+    const FILE_NAME = 'book_ids.json';
+    const ID_RX = /^\d{15,20}$/;
+    const PAGE_SIZE = 60;
+    const $ = (id) => document.getElementById(id);
+    const state = { ids: [], copiedIds: new Set(), config: null, token: '', connected: false, busy: false, page: 1, toastTimer: null };
+    const storageKey = 'novel-vault-settings-v1';
+    const rememberKey = 'novel-vault-pat-remember-v1';
+    const sessionKey = 'novel-vault-pat-session-v1';
+    const splashSeenKey = 'novel-vault-splash-seen-v1';
+
+
+    function hideSplash(force=false) {
+      const splash = $('splashScreen');
+      if (!splash) return;
+      if (force || splash.classList.contains('hidden')) { splash.classList.add('hidden'); return; }
+      splash.classList.add('hidden');
+    }
+    function startSplash() {
+      const splash = $('splashScreen');
+      if (!splash) return;
+      const seen = sessionStorage.getItem(splashSeenKey);
+      const delay = seen ? 350 : 1400;
+      sessionStorage.setItem(splashSeenKey,'1');
+      setTimeout(() => hideSplash(true), delay);
+      splash.addEventListener('click', () => hideSplash(true), { once: true });
+    }
+
+    function uniqueIds(value) {
+      if (!Array.isArray(value)) throw new Error('ไฟล์ JSON ต้องมี book_ids เป็น Array');
+      const result = []; const found = new Set();
+      for (const element of value) {
+        const id = String(element);
+        if (!ID_RX.test(id)) throw new Error('พบค่า Book ID ที่ไม่ถูกต้องใน JSON: ' + id.slice(0, 40));
+        if (!found.has(id)) { found.add(id); result.push(id); }
+      }
+      return result;
+    }
+    function decodeBookFile(text) {
+      const obj = JSON.parse(text);
+      const ids = uniqueIds(Array.isArray(obj) ? obj : obj?.book_ids);
+      const copiedIds = uniqueIds(Array.isArray(obj) ? [] : (obj.copied_ids ?? []));
+      const known = new Set(ids);
+      if (copiedIds.some(id => !known.has(id))) throw new Error('copied_ids มี Book ID ที่ไม่มีใน book_ids');
+      return {ids, copiedIds};
+    }
+    function makeBookFile(ids, copiedIds=[]) {
+      const clean = uniqueIds(ids);
+      const selected = copiedIds instanceof Set ? copiedIds : new Set(uniqueIds(copiedIds));
+      return JSON.stringify({book_ids:clean, copied_ids:clean.filter(id=>selected.has(id))},null,2)+'\n';
+    }
+
+    // Each 19-digit book ID is handled as a STRING, never as a JavaScript Number.
+    function extractBookIds(text) {
+      const raw = []; let invalid = 0;
+      for (const line of String(text).split(/\r?\n/)) {
+        const cleanLine = line.trim(); if (!cleanLine) continue;
+        const urls = cleanLine.match(/https?:\/\/[^\s<>"'`]+/gi);
+        if (urls && urls.length) {
+          for (let urlString of urls) {
+            urlString = urlString.replace(/[),;，。]+$/, '');
+            try {
+              const url = new URL(urlString);
+              const host = url.hostname.toLowerCase();
+              const qid = url.searchParams.get('book_id');
+              let id = qid && ID_RX.test(qid) ? qid : null;
+              if (!id && (host === 'fanqienovel.com' || host.endsWith('.fanqienovel.com'))) {
+                const match = url.pathname.match(/^\/page\/(\d{15,20})(?:\/|$)/);
+                if (match) id = match[1];
+              }
+              if (id) raw.push(id); else invalid++;
+            } catch (err) { invalid++; }
+          }
+        } else {
+          const parts = cleanLine.split(/[\s,，;；]+/).filter(Boolean);
+          for (const part of parts) {
+            if (ID_RX.test(part)) raw.push(part); else invalid++;
+          }
+        }
+      }
+      const unique = [...new Set(raw)];
+      return { raw, unique, duplicateInPaste: raw.length - unique.length, invalid };
+    }
+
+    function showToast(message, error = false) {
+      const node = $('toast'); node.textContent = message;
+      node.classList.toggle('error', error); node.classList.add('show');
+      clearTimeout(state.toastTimer);
+      state.toastTimer = setTimeout(() => node.classList.remove('show'), error ? 5500 : 3500);
+    }
+    function setBusy(flag) {
+      state.busy = flag;
+      for (const id of ['saveBtn','refreshBtn','connectBtn','disconnectBtn','copyAllBtn']) $(id).disabled = flag;
+      $('bookList').querySelectorAll('[data-mark-id],[data-copy-id]').forEach(btn=>btn.disabled=flag);
+      $('connectBtn').textContent = flag ? 'กำลังติดต่อ GitHub...' : 'เชื่อมต่อและโหลดข้อมูล';
+    }
+    function changeStatus() {
+      $('connectionPill').classList.toggle('online', state.connected);
+      $('connectionText').textContent = state.connected ? (state.config.owner + ' / ' + state.config.repo) : 'ยังไม่เชื่อม GitHub';
+      $('historySub').textContent = state.connected ? `${state.config.owner}/${state.config.repo} · ${FILE_NAME}` : 'รายการจากไฟล์ book_ids.json';
+    }
+    function countInput() {
+      const text = $('linkInput').value;
+      const parsed = extractBookIds(text);
+      const oldIds = new Set(state.ids);
+      const newer = parsed.unique.filter(id => !oldIds.has(id));
+      const dupes = parsed.duplicateInPaste + parsed.unique.length - newer.length;
+      $('totalCount').textContent = state.ids.length.toLocaleString('en-US');
+      $('newCount').textContent = newer.length.toLocaleString('en-US');
+      $('dupeCount').textContent = dupes.toLocaleString('en-US');
+      $('lineCounter').textContent = (text.trim() ? text.trim().split(/\r?\n/).length : 0).toLocaleString('en-US') + ' บรรทัด';
+      $('previewText').textContent = `${parsed.unique.length} ID · ใหม่ ${newer.length} · ซ้ำ ${dupes}${parsed.invalid ? ' · ไม่รองรับ ' + parsed.invalid : ''}`;
+      const container = $('previewChips'); container.replaceChildren();
+      if (!parsed.unique.length) {
+        const p = document.createElement('p'); p.className = 'preview-empty';
+        p.textContent = parsed.invalid ? 'ยังไม่พบ Book ID ที่ถูกต้องจากข้อความนี้' : 'รอลิงก์ที่คุณวาง ระบบจะแสดง Book ID ที่ตรวจพบตรงนี้';
+        container.append(p);
+      } else {
+        for (const id of parsed.unique.slice(0, 9)) {
+          const chip = document.createElement('span'); chip.className = 'chip' + (oldIds.has(id) ? ' muted' : '');
+          chip.textContent = id + (oldIds.has(id) ? ' · ซ้ำ' : ''); container.append(chip);
+        }
+        if (parsed.unique.length > 9) {
+          const chip = document.createElement('span'); chip.className = 'chip muted';
+          chip.textContent = `+${parsed.unique.length - 9} รายการ`; container.append(chip);
+        }
+      }
+      return { parsed, newer, dupes };
+    }
+    function addIcon(parent, name, className='icon') {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', className);
+      const use = document.createElementNS('http://www.w3.org/2000/svg', 'use'); use.setAttribute('href', '#i-' + name);
+      svg.append(use); parent.append(svg);
+    }
+    function renderHistory() {
+      const filter = $('searchInput').value.trim();
+      const copyFilter = $('copyFilter').value;
+      const items = state.ids.map((id, index) => ({id, index})).reverse().filter(x =>
+        x.id.includes(filter) && (copyFilter==='all' || (copyFilter==='copied')===state.copiedIds.has(x.id)));
+      const visible = items.slice(0, state.page * PAGE_SIZE);
+      const wrapper = $('bookList'); const oldScroll = wrapper.scrollTop; wrapper.replaceChildren();
+      if (!items.length) {
+        const e = document.createElement('div'); e.className = 'empty'; addIcon(e, 'book');
+        const b = document.createElement('b'); b.textContent = filter ? 'ไม่พบ Book ID' : 'ยังไม่มีรายการ';
+        const p = document.createElement('span'); p.textContent = filter || copyFilter!=='all' ? 'ลองเปลี่ยนคำค้นหาหรือตัวกรอง' : (state.connected ? 'วางลิงก์ด้านซ้ายเพื่อเพิ่มรายการแรก' : 'เชื่อมต่อ GitHub แล้วเริ่มบันทึกได้เลย');
+        e.append(b,p); wrapper.append(e);
+      }
+      const fragment = document.createDocumentFragment();
+      for (const {id,index} of visible) {
+        const item = document.createElement('div'); item.className = 'item';
+        const main = document.createElement('div'); main.className = 'item-main';
+        const number = document.createElement('span'); number.className = 'row-number'; number.textContent = String(index + 1).padStart(2,'0');
+        const symbol = document.createElement('span'); symbol.className = 'book-symbol'; addIcon(symbol,'book');
+        const wasCopied = state.copiedIds.has(id);
+        const labels = document.createElement('div'); labels.className='book-details';
+        const idText = document.createElement('button'); idText.type='button'; idText.className='book-id id-copy-button';
+        idText.title='กดเพื่อคัดลอก '+id; idText.setAttribute('aria-label',idText.title); idText.dataset.copyId=id;
+        const idNumber=document.createElement('span'); idNumber.textContent=id; idText.append(idNumber);addIcon(idText,'copy');
+        const meta = document.createElement('div'); meta.className = 'book-meta'+(wasCopied?' done':'');
+        meta.textContent = wasCopied ? '✓ เคยคัดลอกแล้ว' : 'ยังไม่เคยคัดลอก';
+        labels.append(idText,meta);main.append(number,symbol,labels);
+        const mark = document.createElement('button');mark.type='button';mark.className='mark-btn'+(wasCopied?' done':'');
+        mark.dataset.markId=id;mark.setAttribute('aria-label',wasCopied?'รายการนี้เคยคัดลอกแล้ว':'ทำเครื่องหมายว่าเคยคัดลอก '+id);
+        mark.setAttribute('aria-pressed',String(wasCopied));mark.title=wasCopied?'เคยคัดลอกแล้ว':'กดทำเครื่องหมายว่าเคยคัดลอก';
+        addIcon(mark,'check');const markLabel=document.createElement('span');markLabel.textContent=wasCopied?'คัดลอกแล้ว':'ทำเครื่องหมาย';mark.append(markLabel);
+        mark.disabled=state.busy;
+        item.append(main,mark);fragment.append(item);
+      }
+      wrapper.append(fragment);wrapper.scrollTop=oldScroll;
+      $('copyProgress').textContent=`คัดลอกแล้ว ${state.copiedIds.size.toLocaleString('en-US')} / ${state.ids.length.toLocaleString('en-US')}`;
+      $('shownCount').textContent = `แสดง ${visible.length.toLocaleString('en-US')} จาก ${items.length.toLocaleString('en-US')} รายการ`;
+      $('loadMoreBtn').hidden = visible.length >= items.length;
+      countInput();
+    }
+    function validateConfig(owner,repo,branch) {
+      if (!/^[A-Za-z0-9-]{1,39}$/.test(owner)) throw new Error('ชื่อ Owner ไม่ถูกต้อง');
+      if (!/^[A-Za-z0-9._-]{1,100}$/.test(repo)) throw new Error('ชื่อ Repository ไม่ถูกต้อง');
+      if (branch && (branch.length > 200 || /[\s\x00-\x1F~^:?*[\\]/.test(branch) || branch.startsWith('-') || branch.includes('..') || branch.includes('@{'))) throw new Error('ชื่อ Branch ไม่ถูกต้อง');
+      return {owner,repo,branch};
+    }
+    function apiBase(config=state.config) {return `https://api.github.com/repos/${encodeURIComponent(config.owner)}/${encodeURIComponent(config.repo)}`;}
+    function apiHeaders(withBody = false) {
+      const headers = {Accept:'application/vnd.github+json',Authorization:'Bearer '+state.token};
+      if (withBody) headers['Content-Type'] = 'application/json';
+      return headers;
+    }
+    async function apiCall(url, options={}) {
+      let resp;
+      try {resp = await fetch(url, {...options, cache:'no-store'});}
+      catch(err) {throw new Error('ติดต่อ GitHub ไม่ได้ ตรวจสอบอินเทอร์เน็ต/CORS และลองใหม่');}
+      if (resp.status === 401) throw new Error('Token ไม่ถูกต้องหรือหมดอายุ (401)');
+      if (resp.status === 403) throw new Error('ไม่มีสิทธิ์หรือเกินข้อจำกัด GitHub (403) ตรวจสอบ Contents: Read and write');
+      return resp;
+    }
+    async function responseError(resp) {
+      let msg = '';
+      try {const obj = await resp.json(); msg = (obj && obj.message) || ''; } catch(e) {}
+      return `GitHub ตอบ ${resp.status}${msg ? ': '+msg.slice(0,160) : ''}`;
+    }
+    function encodeContent(str) {
+      const bytes = new TextEncoder().encode(str); let binary = '';
+      // Bounded chunks avoid "Maximum call stack size exceeded" on large libraries.
+      for (let i=0;i<bytes.length;i+=8192) binary += String.fromCharCode(...bytes.subarray(i,i+8192));
+      return btoa(binary);
+    }
+    function decodeContent(encoded) {
+      const bytes = Uint8Array.from(atob(encoded.replace(/\s/g,'')), c => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+    async function remoteRead() {
+      const url = `${apiBase()}/contents/${FILE_NAME}?ref=${encodeURIComponent(state.config.branch)}`;
+      const resp = await apiCall(url,{headers:apiHeaders()});
+      if (resp.status === 404) return {ids:[], copiedIds:[], sha:null};
+      if (!resp.ok) throw new Error(await responseError(resp));
+      const data = await resp.json();
+      if (!data || data.type !== 'file' || data.encoding !== 'base64' || typeof data.content !== 'string' || !data.content) throw new Error('GitHub ไม่ส่งเนื้อหาไฟล์กลับมา (ไฟล์อาจใหญ่เกิน API รองรับ)');
+      return {...decodeBookFile(decodeContent(data.content)), sha:data.sha};
+    }
+    async function remoteWrite(ids, copiedIds, sha) {
+      const body = {message:`Update novel IDs / copied status (${ids.length} total)`,content:encodeContent(makeBookFile(ids,copiedIds)),branch:state.config.branch};
+      if (sha) body.sha = sha;
+      const resp = await apiCall(`${apiBase()}/contents/${FILE_NAME}`,{method:'PUT',headers:apiHeaders(true),body:JSON.stringify(body)});
+      if (resp.status === 409 || resp.status === 422) return {conflict:true,status:resp.status};
+      if (!resp.ok) throw new Error(await responseError(resp));
+      return {conflict:false};
+    }
+    function persistToken(remember) {
+      sessionStorage.setItem(sessionKey,state.token);
+      if (remember) localStorage.setItem(rememberKey,state.token);
+      else localStorage.removeItem(rememberKey);
+    }
+    async function connect({quiet=false}={}) {
+      if (state.busy) return;
+      const owner = $('ownerInput').value.trim(); const repo = $('repoInput').value.trim();
+      const branch = $('branchInput').value.trim(); const token = $('tokenInput').value.trim();
+      if (!token) {if(!quiet) showToast('กรุณากรอก GitHub Token',true);return;}
+      const cfg = validateConfig(owner,repo,branch);
+      state.token = token;
+      setBusy(true);
+      try {
+        const r = await apiCall(apiBase(cfg),{headers:apiHeaders()});
+        if (!r.ok) throw new Error(await responseError(r));
+        const info = await r.json();
+        cfg.branch = cfg.branch || info.default_branch;
+        if (!cfg.branch) throw new Error('ไม่พบ Default Branch โปรดสร้าง Commit แรกใน Repository');
+        // Check the branch explicitly; a missing book_ids.json is allowed.
+        const br = await apiCall(`${apiBase(cfg)}/branches/${encodeURIComponent(cfg.branch)}`,{headers:apiHeaders()});
+        if (!br.ok) throw new Error('ไม่พบ Branch: '+cfg.branch+' (HTTP '+br.status+')');
+        state.config = cfg;
+        const remote = await remoteRead();
+        state.ids = remote.ids; state.copiedIds=new Set(remote.copiedIds); state.connected = true;
+        state.page=1;
+        localStorage.setItem(storageKey,JSON.stringify(cfg));
+        persistToken($('rememberTokenInput').checked);
+        $('branchInput').value=cfg.branch;
+        $('settingsDialog').close(); changeStatus(); renderHistory();
+        if (!quiet) showToast(`เชื่อมต่อสำเร็จ • พบ ${state.ids.length} Book ID`);
+      } catch (err) {
+        state.connected = false; changeStatus();
+        if (!quiet) showToast(err.message,true);
+      } finally {setBusy(false);}
+    }
+    async function refresh() {
+      if (!state.connected) {openSettings();return;}
+      if (state.busy) return;
+      setBusy(true);
+      try {const remote=await remoteRead();state.ids=remote.ids;state.copiedIds=new Set(remote.copiedIds);state.page=1;renderHistory();showToast(`อัปเดตจาก GitHub แล้ว (${state.ids.length} รายการ)`);}
+      catch(err){showToast(err.message,true);} finally{setBusy(false);}
+    }
+    async function save() {
+      if (!state.connected) {openSettings();showToast('เชื่อมต่อ GitHub ก่อนบันทึก');return;}
+      if (state.busy) return;
+      const {parsed}=countInput();
+      if (!parsed.unique.length) {showToast(parsed.invalid?'ไม่พบลิงก์หรือ Book ID ที่รองรับ':'วางลิงก์ก่อนบันทึก',true);return;}
+      setBusy(true);
+      try {
+        let updated = false; let added = 0; let newIds = []; let newCopied = [];
+        for (let attempt=0;attempt<5;attempt++) {
+          const remote = await remoteRead();
+          const existing = new Set(remote.ids);
+          const incoming = parsed.unique.filter(id=>!existing.has(id));
+          if (!incoming.length) {newIds=remote.ids;newCopied=remote.copiedIds;added=0;updated=true;break;}
+          newIds=remote.ids.concat(incoming); newCopied=remote.copiedIds;
+          const result = await remoteWrite(newIds,newCopied,remote.sha);
+          if (!result.conflict) {added=incoming.length;updated=true;break;}
+          if (result.status===422 && attempt===4) throw new Error('GitHub ปฏิเสธการอัปเดต (422) ตรวจสอบสิทธิ์ Contents: Write และ Branch');
+        }
+        if (!updated) throw new Error('ไฟล์ถูกเปลี่ยนพร้อมกันหลายครั้ง กรุณากดบันทึกอีกครั้ง');
+        state.ids=newIds;state.copiedIds=new Set(newCopied);state.page=1;renderHistory();
+        $('linkInput').value='';countInput();
+        showToast(added ? `บันทึกสำเร็จ เพิ่ม ${added} Book ID • ข้ามรายการซ้ำ ${parsed.raw.length-added}` : 'Book ID ทั้งหมดมีอยู่แล้ว ไม่ได้บันทึกซ้ำ');
+      } catch(err) {showToast('บันทึกไม่สำเร็จ: '+err.message,true);}
+      finally {setBusy(false);}
+    }
+    function openSettings() {
+      if (state.config) {$('ownerInput').value=state.config.owner;$('repoInput').value=state.config.repo;$('branchInput').value=state.config.branch;}
+      $('tokenInput').value=state.token||'';
+      $('rememberTokenInput').checked=Boolean(localStorage.getItem(rememberKey));
+      $('settingsDialog').showModal();
+    }
+    async function copy(text) {
+      try {await navigator.clipboard.writeText(text);return true;}
+      catch(e) {showToast('คัดลอกไม่สำเร็จ: กรุณาใช้ HTTPS หรือคัดลอกด้วยตนเอง',true);return false;}
+    }
+    async function markCopied(ids, fromCopy=false) {
+      if (!state.connected) {showToast('เชื่อมต่อ GitHub ก่อนบันทึกสถานะ',true);return;}
+      if (state.busy) {showToast('มีรายการกำลังบันทึก โปรดลองอีกครั้ง');return;}
+      const wanted=[...new Set(ids)].filter(id=>state.ids.includes(id));
+      if (!wanted.length) return;
+      setBusy(true);
+      try {
+        let saved=null;
+        for(let attempt=0;attempt<5;attempt++) {
+          const remote=await remoteRead();
+          const merged=new Set(remote.copiedIds);
+          const known=new Set(remote.ids);
+          wanted.forEach(id=>{if(known.has(id))merged.add(id);});
+          const copiedIds=remote.ids.filter(id=>merged.has(id));
+          if(copiedIds.length===remote.copiedIds.length) {saved={ids:remote.ids,copiedIds};break;}
+          const result=await remoteWrite(remote.ids,copiedIds,remote.sha);
+          if(!result.conflict) {saved={ids:remote.ids,copiedIds};break;}
+        }
+        if (!saved) throw new Error('มีการเปลี่ยนไฟล์พร้อมกันหลายครั้ง กรุณาลองใหม่');
+        state.ids=saved.ids;state.copiedIds=new Set(saved.copiedIds);renderHistory();
+        showToast(fromCopy?'คัดลอกแล้ว และบันทึกสถานะลง GitHub แล้ว':'บันทึกสถานะ “คัดลอกแล้ว” ลง GitHub แล้ว');
+      } catch(err) {
+        showToast((fromCopy?'คัดลอกสำเร็จ แต่บันทึกสถานะไม่สำเร็จ: ':'บันทึกสถานะไม่สำเร็จ: ')+err.message,true);
+      } finally {setBusy(false);}
+    }
+    async function copyOne(id) {
+      if(state.busy) return;
+      if(!await copy(id)) return;
+      if(state.copiedIds.has(id)) {showToast('คัดลอก '+id+' แล้ว (เคยคัดลอกแล้ว)');return;}
+      showToast('คัดลอกแล้ว กำลังบันทึกสถานะ...');
+      await markCopied([id],true);
+    }
+    function download() {
+      if (!state.connected) {showToast('กรุณาเชื่อมต่อ GitHub และโหลดรายการก่อนดาวน์โหลด',true);return;}
+      const blob = new Blob([makeBookFile(state.ids,state.copiedIds)],{type:'application/json;charset=utf-8'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=FILE_NAME;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    }
+    function disconnect() {
+      state.token='';state.connected=false;state.ids=[];state.copiedIds=new Set();state.config=null;state.page=1;
+      localStorage.removeItem(rememberKey);sessionStorage.removeItem(sessionKey);
+      $('tokenInput').value='';$('settingsDialog').close();changeStatus();renderHistory();showToast('ออกจากระบบแล้ว (การตั้งค่า Repository ยังเก็บอยู่)');
+    }
+    $('settingsBtn').addEventListener('click',openSettings);
+    $('closeSettingsBtn').addEventListener('click',()=>$('settingsDialog').close());
+    $('settingsForm').addEventListener('submit',(e)=>{e.preventDefault();connect();});
+    $('disconnectBtn').addEventListener('click',disconnect);
+    $('toggleTokenBtn').addEventListener('click',()=>{const x=$('tokenInput');x.type=x.type==='password'?'text':'password';$('toggleTokenBtn').textContent=x.type==='password'?'แสดง':'ซ่อน';});
+    $('linkInput').addEventListener('input',countInput);
+    $('clearBtn').addEventListener('click',()=>{$('linkInput').value='';countInput();$('linkInput').focus();});
+    $('pasteBtn').addEventListener('click',async()=>{try{const text=await navigator.clipboard.readText();if (!text) throw new Error();$('linkInput').value+=($('linkInput').value.trim()?'\n':'')+text;countInput();}catch(e){showToast('ไม่สามารถอ่านคลิปบอร์ด กรุณากดวางในช่องข้อความแทน',true);}});
+    $('saveBtn').addEventListener('click',save);
+    $('downloadBtn').addEventListener('click',download);
+    $('refreshBtn').addEventListener('click',refresh);
+    $('copyAllBtn').addEventListener('click',async()=>{
+      if(state.busy) return;
+      if(!state.ids.length){showToast('ยังไม่มี Book ID ให้คัดลอก');return;}
+      if(!await copy(state.ids.join('\n'))) return;
+      if(state.ids.every(id=>state.copiedIds.has(id))) {showToast('คัดลอก Book ID ทั้งหมดแล้ว');return;}
+      showToast('คัดลอกทั้งหมดแล้ว กำลังบันทึกสถานะ...');await markCopied(state.ids,true);
+    });
+    $('searchInput').addEventListener('input',()=>{state.page=1;renderHistory();});
+    $('copyFilter').addEventListener('change',()=>{state.page=1;renderHistory();});
+    $('loadMoreBtn').addEventListener('click',()=>{state.page++;renderHistory();});
+    $('bookList').addEventListener('click',(e)=>{
+      const b=e.target.closest('[data-copy-id]');if(b) {copyOne(b.dataset.copyId);return;}
+      const m=e.target.closest('[data-mark-id]');if(m) markCopied([m.dataset.markId]);
+    });
+    $('settingsDialog').addEventListener('click',(e)=>{if(e.target===$('settingsDialog')) $('settingsDialog').close();});
+    // The token is never written into HTML or uploaded to the GitHub repository.
+    try {
+      const stored=JSON.parse(localStorage.getItem(storageKey)||'null');
+      if (stored) {
+        state.config=validateConfig(stored.owner,stored.repo,stored.branch||'');
+        $('ownerInput').value=state.config.owner;$('repoInput').value=state.config.repo;$('branchInput').value=state.config.branch;
+      }
+      state.token=sessionStorage.getItem(sessionKey)||localStorage.getItem(rememberKey)||'';
+      $('tokenInput').value=state.token;
+      $('rememberTokenInput').checked=Boolean(localStorage.getItem(rememberKey));
+    } catch(e) {console.warn('Config not available',e);}
+    changeStatus();renderHistory();
+    startSplash();
+    if (state.config && state.token) connect({quiet:true});
+  })();
+  </script>
+</body>
+</html>

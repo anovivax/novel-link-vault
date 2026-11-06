@@ -1,0 +1,21 @@
+{
+  "name": "Novel ID Vault",
+  "short_name": "Novel Vault",
+  "description": "บันทึก Book ID จาก Fanqie และ Changdu ลง GitHub แบบไม่ซ้ำ ใช้ได้ทั้งมือถือและคอมพิวเตอร์",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#08101f",
+  "theme_color": "#0a1222",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
