@@ -75,6 +75,19 @@
       .id-copy-button .id-number {font-size:11px;letter-spacing:-.42px;}
       .mark-btn {min-width:99px;max-width:99px;}
     }
+
+    /* V6 Fast Mode: always-visible feedback for unsaved optimistic changes. */
+    .sync-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 15px;margin:-23px 0 22px;border:1px solid #2d5474;border-radius:13px;background:#102236;color:#cce3fb;font-size:12px;font-weight:650}
+    .sync-banner[hidden]{display:none!important}
+    .sync-dot{width:9px;height:9px;flex:none;border-radius:100%;background:#66d9bd;box-shadow:0 0 0 4px #66d9bd21}
+    .sync-banner.pending .sync-dot{background:#ffd38b;box-shadow:0 0 0 4px #ffd38b22}
+    .sync-banner.error{border-color:#92515e;background:#301e2b;color:#ffccd1}
+    .sync-banner.error .sync-dot{background:#ff8d9a;box-shadow:0 0 0 4px #ff8d9a22}
+    .sync-label{flex:1;min-width:150px}
+    .sync-retry{border:1px solid #6d8bad;border-radius:9px;background:#1d3954;color:#e8f4ff;padding:6px 12px;font-size:11px;font-weight:750}
+    .sync-retry:hover{background:#2a5275}
+    .item.pending-status .mark-btn{outline:1px dashed #d5b473;outline-offset:2px}
+    @media(max-width:570px){.sync-banner{margin:-11px 0 15px;padding:10px 12px}}
   </style>
 </head>
 <body>
@@ -112,6 +125,11 @@
       <div class="brand"><div class="brand-icon"><img src="logo-2d.png" alt="Novel ID Vault logo" /></div><div><div class="brand-name">Novel ID Vault</div><div class="brand-caption">BOOK ID MANAGER</div></div></div>
       <div class="header-actions"><div class="pill" id="connectionPill"><span class="dot"></span><span id="connectionText">ยังไม่เชื่อม GitHub</span></div><button class="icon-btn" id="shareBtn" title="คัดลอกลิงก์แชร์ส่วนตัว" aria-label="คัดลอกลิงก์แชร์ส่วนตัว" disabled><svg class="icon"><use href="#i-copy"/></svg> แชร์ลิงก์</button><button class="icon-btn" id="settingsBtn" title="ตั้งค่าการเข้าถึง"><svg class="icon"><use href="#i-settings"/></svg> ตั้งค่า</button></div>
     </header>
+    <div class="sync-banner" id="syncBanner" role="status" aria-live="polite" hidden>
+      <span class="sync-dot" id="syncDot"></span>
+      <span class="sync-label" id="syncLabel">กำลังเตรียมการซิงก์</span>
+      <button class="sync-retry" id="retrySyncBtn" type="button" hidden>ลองซิงก์อีกครั้ง</button>
+    </div>
 
     <section class="hero"><div><div class="eyebrow">YOUR NOVEL COLLECTION, ORGANIZED.</div><h1>เก็บ Book ID นิยาย<br />ง่าย ๆ ไม่ซ้ำกัน</h1><p>วางลิงก์ Fanqie หรือ Changdu หลายเรื่องพร้อมกัน • ตรวจสอบรายการซ้ำอัตโนมัติ • ส่งลิงก์เดียวใช้ได้ทุกเครื่อง ไม่ต้องกรอก GitHub Token</p></div><div class="hero-ornament"><img src="logo-2d.png" alt="Novel ID Vault logo" /></div></section>
 
@@ -153,6 +171,11 @@
     const localKey = 'novel-vault-access-key-v4';
     const sessionKey = 'novel-vault-access-session-v4';
     const splashSeenKey = 'novel-vault-splash-seen-v1';
+    const PENDING_PREFIX = 'novel-vault-fast-pending-v6:';
+    const FLUSH_DEBOUNCE_MS = 550;
+    const queue = {add:[], copied:new Map()};
+    let flushTimer=null, flushing=false, flushError='', retryCount=0;
+
 
     function hideSplash() { $('splashScreen')?.classList.add('hidden'); }
     function startSplash() {
@@ -227,10 +250,133 @@
     }
 
 
+    // Local-first queue: the clipboard/UI never blocks on GitHub's commit latency.
+    function queueKey(){return PENDING_PREFIX+state.vaultName;}
+    function pendingCount(){return queue.add.length+queue.copied.size;}
+    function persistPending(){
+      if(!state.vaultName)return;
+      try {
+        const key=queueKey();
+        if(pendingCount())localStorage.setItem(key,JSON.stringify({add:queue.add,copied:Object.fromEntries(queue.copied)}));
+        else localStorage.removeItem(key);
+      }catch(e){
+        flushError='เบราว์เซอร์บันทึกคิวไม่สำเร็จ กรุณาเปิดพื้นที่จัดเก็บ หรือเปิดหน้านี้ค้างไว้จนซิงก์สำเร็จ';
+      }
+    }
+    function restorePending(){
+      queue.add=[];queue.copied.clear();
+      try {
+        const saved=JSON.parse(localStorage.getItem(queueKey())||'null');
+        if(saved){
+          queue.add=uniqueIds(saved.add||[]);
+          for(const [id,yes] of Object.entries(saved.copied||{})){
+            if(ID_RX.test(id)&&typeof yes==='boolean')queue.copied.set(id,yes);
+          }
+        }
+      }catch(e){
+        flushError='อ่านคิวในเครื่องไม่ได้ กรุณาสำรองข้อมูลก่อนล้างข้อมูลเว็บไซต์';
+      }
+    }
+    function updateSyncBanner(){
+      const node=$('syncBanner');
+      if(!state.connected){node.hidden=true;return;}
+      const left=pendingCount();node.hidden=false;
+      node.classList.toggle('pending',left>0);
+      node.classList.toggle('error',!!flushError);
+      $('retrySyncBtn').hidden=!flushError;
+      if(flushError){$('syncLabel').textContent=`ซิงก์ยังไม่สำเร็จ • ค้าง ${left} รายการ • ${flushError}`;return;}
+      if(flushing){$('syncLabel').textContent=`กำลังซิงก์กับ GitHub • ค้าง ${left} รายการ (กดปุ่มอื่นต่อได้)`;return;}
+      $('syncLabel').textContent=left?`บันทึกในเครื่องแล้ว • รอซิงก์ GitHub ${left} รายการ`:'✓ บันทึกบน GitHub เรียบร้อย';
+    }
+    function overlayPending(){
+      const known=new Set(state.ids);
+      for(const id of queue.add)if(!known.has(id)){state.ids.push(id);known.add(id);}
+      for(const [id,yes] of queue.copied){
+        if(!known.has(id))continue;
+        if(yes)state.copiedIds.add(id);
+        else state.copiedIds.delete(id);
+      }
+      renderHistory();updateSyncBanner();
+    }
+    function scheduleFlush(delay=FLUSH_DEBOUNCE_MS){
+      clearTimeout(flushTimer);flushTimer=null;
+      if(!state.connected||!pendingCount())return;
+      if(flushing){updateSyncBanner();return;}
+      flushTimer=setTimeout(()=>{flushTimer=null;void flushQueue();},delay);
+      updateSyncBanner();
+    }
+    function queueAdd(ids){
+      const known=new Set(state.ids);
+      const pending=new Set(queue.add);
+      let added=0;
+      for(const id of ids){
+        if(known.has(id)||pending.has(id))continue;
+        known.add(id);pending.add(id);queue.add.push(id);state.ids.push(id);added++;
+      }
+      if(added){flushError='';retryCount=0;persistPending();renderHistory();scheduleFlush();}
+      return added;
+    }
+    function queueCopied(ids,shouldBeCopied){
+      const known=new Set(state.ids);
+      let count=0;
+      for(const id of new Set(ids)){
+        if(!known.has(id))continue;
+        const was=state.copiedIds.has(id);
+        if(was===shouldBeCopied && !queue.copied.has(id))continue;
+        queue.copied.set(id,shouldBeCopied);
+        if(shouldBeCopied)state.copiedIds.add(id);
+        else state.copiedIds.delete(id);
+        if(was!==shouldBeCopied)count++;
+      }
+      if(queue.copied.size){flushError='';retryCount=0;persistPending();renderHistory();scheduleFlush();}
+      return count;
+    }
+    async function flushQueue(){
+      if(flushing||!state.connected||!pendingCount())return;
+      clearTimeout(flushTimer);flushTimer=null;
+      flushing=true;flushError='';updateSyncBanner();
+      const startedVault=state.vaultName;
+      const add=queue.add.slice(0,1000);
+      const status=Array.from(queue.copied).slice(0,1000);
+      const marks=status.filter(([,v])=>v).map(([id])=>id);
+      const unmarks=status.filter(([,v])=>!v).map(([id])=>id);
+      try {
+        const latest=await apiCall('POST','/api/books',{
+          add_ids:add,mark_copied:marks,unmark_copied:unmarks
+        });
+        if(startedVault!==state.vaultName||!state.connected)return;
+        const sentAdd=new Set(add);
+        queue.add=queue.add.filter(id=>!sentAdd.has(id));
+        for(const [id,yes] of status)if(queue.copied.get(id)===yes)queue.copied.delete(id);
+        // GitHub is canonical, except for local clicks made *during* this request.
+        state.ids=uniqueIds(latest.book_ids);
+        state.copiedIds=new Set(uniqueIds(latest.copied_ids||[]));
+        retryCount=0;flushError='';
+        persistPending();overlayPending();
+      }catch(e){
+        if(startedVault!==state.vaultName||!state.connected)return;
+        retryCount++;
+        flushError='เชื่อมต่อไม่ได้: '+String(e.message||e).slice(0,130);
+        persistPending();
+        updateSyncBanner();
+        // Store unsent changes locally, retry on a later timer / reconnect.
+        // Retry is scheduled in finally after this request is no longer in-flight.
+      }finally{
+        flushing=false;
+        if(state.connected&&startedVault===state.vaultName){
+          updateSyncBanner();
+          if(pendingCount()&&!flushTimer){
+            if(flushError)scheduleFlush(Math.min(30000,2500*Math.pow(2,Math.min(retryCount-1,4))));
+            else scheduleFlush(80);
+          }
+        }
+      }
+    }
+
     function setBusy(flag) {
       state.busy=flag;
-      for (const id of ['saveBtn','refreshBtn','connectBtn','disconnectBtn','copyAllBtn','shareBtn']) $(id).disabled=flag;
-      $('bookList').querySelectorAll('[data-mark-id],[data-copy-id]').forEach(btn=>btn.disabled=flag);
+      for (const id of ['refreshBtn','connectBtn','disconnectBtn']) $(id).disabled=flag;
+      // Copy and local status buttons stay responsive while network requests run.
       $('connectBtn').textContent=flag?'กำลังตรวจรหัสแชร์...':'เชื่อมต่อคลัง Book ID';
     }
     function changeStatus() {
@@ -289,7 +435,7 @@
       }
       const fragment = document.createDocumentFragment();
       for (const {id,index} of visible) {
-        const item = document.createElement('div'); item.className = 'item';
+        const item = document.createElement('div'); item.className = 'item'+(queue.copied.has(id)?' pending-status':'');
         const main = document.createElement('div'); main.className = 'item-main';
         const number = document.createElement('span'); number.className = 'row-number'; number.textContent = String(index + 1).padStart(2,'0');
         const wasCopied = state.copiedIds.has(id);
@@ -313,7 +459,7 @@
         const markCaption=document.createElement('span');markCaption.className='mark-caption';
         markCaption.textContent=wasCopied?'แตะเพื่อยกเลิก':'แตะเพื่อทำเครื่องหมาย';
         mark.append(markLabel,markCaption);
-        idText.disabled=state.busy;mark.disabled=state.busy;
+        idText.disabled=!state.connected;mark.disabled=!state.connected;
         item.append(main,mark);fragment.append(item);
       }
       wrapper.append(fragment);wrapper.scrollTop=oldScroll;
@@ -340,7 +486,7 @@
     function applyData(data) {
       state.ids=uniqueIds(data.book_ids);
       state.copiedIds=new Set(uniqueIds(data.copied_ids||[]));
-      state.page=1;renderHistory();
+      state.page=1;overlayPending();
     }
     async function connect({quiet=false}={}) {
       if(state.busy)return;
@@ -349,17 +495,18 @@
       setBusy(true);
       try {
         const info=await apiCall('GET','/api/health',null,key);
-        const list=await apiCall('GET','/api/books',null,key);
+        const list=Array.isArray(info.book_ids)?info:await apiCall('GET','/api/books',null,key);
         state.accessKey=key;state.vaultName=info.owner+'/'+info.repo;
-        applyData(list);state.connected=true;
+        restorePending();state.connected=true;applyData(list);
         sessionStorage.setItem(sessionKey,key);
         if($('rememberAccessInput').checked)localStorage.setItem(localKey,key);
         else localStorage.removeItem(localKey);
-        $('settingsDialog').close();changeStatus();
+        $('settingsDialog').close();changeStatus();updateSyncBanner();
+        if(pendingCount())scheduleFlush(100);
         if(!quiet)showToast('เชื่อมต่อสำเร็จ • '+state.ids.length+' Book ID');
         if(!info.bookFileExists && !quiet)showToast('เชื่อมต่อแล้ว แต่ GitHub ยังไม่มี book_ids.json — บันทึกครั้งแรกเพื่อสร้างไฟล์');
       } catch(err) {
-        state.connected=false;changeStatus();
+        state.connected=false;changeStatus();updateSyncBanner();
         if(!quiet)showToast(err.message,true);
         else {console.warn('Auto-connect unsuccessful'); setTimeout(openSettings,1500);}
       } finally {setBusy(false);}
@@ -371,22 +518,13 @@
       try {const data=await apiCall('GET','/api/books');applyData(data);showToast('รีเฟรชสำเร็จ • '+state.ids.length+' Book ID');}
       catch(e){showToast(e.message,true);}finally{setBusy(false);}
     }
-    async function save() {
+    function save() {
       if(!state.connected){openSettings();showToast('เปิดลิงก์ส่วนตัวและเชื่อมต่อคลังก่อน',true);return;}
-      if(state.busy)return;
       const {parsed}=countInput();
       if(!parsed.unique.length){showToast('ยังไม่มี Book ID ที่ถูกต้องในช่องข้อความ',true);return;}
-      setBusy(true);
-      try {
-        let added=0,latest;
-        for(let i=0;i<parsed.unique.length;i+=1000){
-          latest=await apiCall('POST','/api/books',{add_ids:parsed.unique.slice(i,i+1000),mark_copied:[]});
-          added+=latest.added||0;
-        }
-        applyData(latest);
-        $('linkInput').value='';countInput();
-        showToast(added?'บันทึกสำเร็จ +'+added+' Book ID · ข้ามรายการซ้ำ':'รายการเหล่านี้มีอยู่แล้ว ไม่มีการบันทึกซ้ำ');
-      }catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message,true);}finally{setBusy(false);}
+      const added=queueAdd(parsed.unique);
+      $('linkInput').value='';countInput();
+      showToast(added?`เพิ่ม ${added} Book ID ในเครื่องแล้ว • กำลังซิงก์ GitHub`:'ทั้งหมดเป็นรายการซ้ำ ไม่มีรายการใหม่');
     }
     function openSettings() {
       $('accessKeyInput').value=state.accessKey;
@@ -407,39 +545,17 @@
       if(!state.connected||!state.accessKey){openSettings();return;}
       if(await copy(buildShareLink()))showToast('คัดลอกลิงก์ส่วนตัวแล้ว • ส่งให้เครื่องที่คุณเชื่อถือเท่านั้น');
     }
-    async function updateCopied(ids,mode,{fromCopy=false}={}) {
-      if(!state.connected){openSettings();return;}
-      if(state.busy)return;
-      const wanted=[...new Set(ids)].filter(id=>state.ids.includes(id));
-      if(!wanted.length)return;
-      setBusy(true);
-      try {
-        let latest,changed=0;
-        for(let i=0;i<wanted.length;i+=2000){
-          latest=await apiCall('POST','/api/books',{
-            add_ids:[],
-            mark_copied:mode==='mark'?wanted.slice(i,i+2000):[],
-            unmark_copied:mode==='unmark'?wanted.slice(i,i+2000):[]
-          });
-          changed+=(mode==='unmark'?latest.unmarked:latest.marked)||0;
-        }
-        applyData(latest);
-        if(mode==='unmark')showToast(changed?'ยกเลิกสถานะคัดลอกแล้วสำเร็จ':'รายการนี้ยังไม่คัดลอกอยู่แล้ว');
-        else showToast(fromCopy?'คัดลอกแล้ว และบันทึกสถานะบน GitHub สำเร็จ':'ทำเครื่องหมายคัดลอกแล้ว '+changed+' รายการ');
-      } catch(e) {
-        showToast((fromCopy?'คัดลอกสำเร็จ แต่บันทึกสถานะไม่สำเร็จ: ':'เปลี่ยนสถานะไม่สำเร็จ: ')+e.message,true);
-      } finally {setBusy(false);}
-    }
-    async function toggleCopied(id) {
-      const mode=state.copiedIds.has(id)?'unmark':'mark';
-      await updateCopied([id],mode);
+    function toggleCopied(id) {
+      if(!state.connected)return;
+      const copied=!state.copiedIds.has(id);
+      queueCopied([id],copied);
+      showToast(copied?'ทำเครื่องหมายคัดลอกแล้ว • กำลังซิงก์':'ยกเลิกสถานะแล้ว • กำลังซิงก์');
     }
     async function copyOne(id) {
-      if(state.busy)return;
+      if(!state.connected)return;
       if(!await copy(id))return;
-      // Even when copied already, clicking big ID button always copies; keep its state marked.
-      if(state.copiedIds.has(id)){showToast('คัดลอก Book ID '+id+' แล้ว');return;}
-      await updateCopied([id],'mark',{fromCopy:true});
+      if(!state.copiedIds.has(id))queueCopied([id],true);
+      showToast('คัดลอก '+id+' สำเร็จ'+(pendingCount()?' • รอซิงก์ GitHub':''));
     }
     function download() {
       if(!state.connected){openSettings();return;}
@@ -447,10 +563,18 @@
       const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=FILE_NAME;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);
     }
     function disconnect() {
+      if(pendingCount()&&!confirm('มี '+pendingCount()+' รายการที่ยังไม่ซิงก์ GitHub\nออกจากระบบตอนนี้จะหยุดส่งข้อมูลจนกว่าจะเชื่อมต่อคลังเดิมอีกครั้ง ต้องการดำเนินการต่อหรือไม่?'))return;
+      clearTimeout(flushTimer);flushTimer=null;queue.add=[];queue.copied.clear();
       state.accessKey='';state.connected=false;state.ids=[];state.copiedIds=new Set();state.vaultName='';
       sessionStorage.removeItem(sessionKey);localStorage.removeItem(localKey);
-      $('accessKeyInput').value='';$('settingsDialog').close();changeStatus();renderHistory();showToast('ออกจากระบบบนอุปกรณ์นี้แล้ว');
+      $('accessKeyInput').value='';$('settingsDialog').close();changeStatus();renderHistory();updateSyncBanner();showToast('ออกจากระบบบนอุปกรณ์นี้แล้ว');
     }
+    $('retrySyncBtn').addEventListener('click',()=>{
+      retryCount=0;flushError='';clearTimeout(flushTimer);flushTimer=null;updateSyncBanner();void flushQueue();
+    });
+    window.addEventListener('online',()=>{if(pendingCount()){flushError='';scheduleFlush(50);}});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&pendingCount())scheduleFlush(50);});
+    window.addEventListener('pagehide',persistPending);
     $('settingsBtn').addEventListener('click',openSettings);
     $('shareBtn').addEventListener('click',share);
     $('shareInDialogBtn').addEventListener('click',share);
@@ -465,11 +589,11 @@
     $('downloadBtn').addEventListener('click',download);
     $('refreshBtn').addEventListener('click',refresh);
     $('copyAllBtn').addEventListener('click',async()=>{
-      if(state.busy)return;
+      if(!state.connected)return;
       if(!state.ids.length){showToast('ยังไม่มี Book ID ให้คัดลอก');return;}
       if(!await copy([...state.ids].reverse().join('\n')))return;
-      if(state.ids.every(id=>state.copiedIds.has(id))){showToast('คัดลอกทั้งหมดแล้ว');return;}
-      await updateCopied(state.ids,'mark',{fromCopy:true});
+      queueCopied(state.ids,true);
+      showToast('คัดลอกทั้งหมดแล้ว'+(pendingCount()?' • กำลังซิงก์ GitHub':''));
     });
     $('searchInput').addEventListener('input',()=>{state.page=1;renderHistory();});
     $('copyFilter').addEventListener('change',()=>{state.page=1;renderHistory();});
