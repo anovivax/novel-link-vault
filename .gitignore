@@ -1,0 +1,7 @@
+sync_config.local.json
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+__pycache__/
+*.pyc

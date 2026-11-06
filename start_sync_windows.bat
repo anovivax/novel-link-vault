@@ -4,12 +4,13 @@ cd /d "%~dp0"
 where py >nul 2>nul
 if %errorlevel%==0 (
   py -3 sync_windows.py
-  goto :eof
+  goto end
 )
 where python >nul 2>nul
 if %errorlevel%==0 (
   python sync_windows.py
-  goto :eof
+  goto end
 )
-echo ไม่พบ Python กรุณาติดตั้ง Python 3 ก่อนใช้งาน
+echo Python not found. Please install Python 3.9 or later.
+:end
 pause
