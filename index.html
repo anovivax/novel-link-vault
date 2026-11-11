@@ -88,6 +88,10 @@
     .sync-retry:hover{background:#2a5275}
     .item.pending-status .mark-btn{outline:1px dashed #d5b473;outline-offset:2px}
     @media(max-width:570px){.sync-banner{margin:-11px 0 15px;padding:10px 12px}}
+    .short-resolve-status{margin-top:11px;padding:11px 12px;border:1px solid #2b5873;border-radius:12px;background:rgba(28,74,100,.3);color:#a9dff3;font-size:12px;line-height:1.7}
+    .short-resolve-status.error{border-color:#8b4856;background:rgba(119,43,58,.19);color:#ffb3be}
+    .short-resolve-status.ok{border-color:#2a7469;background:rgba(30,112,93,.18);color:#91edcc}
+    .short-resolve-status[hidden]{display:none}
   </style>
 </head>
 <body>
@@ -135,12 +139,12 @@
 
     <section class="stats" aria-label="สถิติ Book ID"><div class="stat"><div class="stat-head"><svg class="icon"><use href="#i-stack"/></svg> บันทึกแล้วทั้งหมด</div><div class="stat-number" id="totalCount">0</div></div><div class="stat"><div class="stat-head"><svg class="icon"><use href="#i-plus"/></svg> ตรวจพบรายการใหม่</div><div class="stat-number" id="newCount">0</div></div><div class="stat"><div class="stat-head"><svg class="icon"><use href="#i-check"/></svg> รายการซ้ำ</div><div class="stat-number" id="dupeCount">0</div></div></section>
 
-    <div class="grid"><section class="panel"><div class="panel-head"><div><h2 class="panel-title">เพิ่มลิงก์นิยาย</h2><p class="panel-sub">วางได้หลายลิงก์ บรรทัดละหนึ่งรายการ หรือใส่ Book ID โดยตรง</p></div><span class="tiny-mark">AUTO EXTRACT</span></div><div class="content-pad">
-      <div class="textarea-wrap"><textarea id="linkInput" class="paste-input" spellcheck="false" aria-label="วางลิงก์นิยาย" placeholder="https://fanqienovel.com/page/7132121215128308767&#10;https://fanqienovel.com/page/7358745778921147454?source=seo_fq_juhe&#10;https://changdunovel.com/ug/pages/book-share?book_id=7658239968585731096&#10;&#10;วางลิงก์ทั้งหมดของคุณตรงนี้..."></textarea><span class="textarea-count" id="lineCounter">0 บรรทัด</span></div>
+    <div class="grid"><section class="panel"><div class="panel-head"><div><h2 class="panel-title">เพิ่มลิงก์นิยาย</h2><p class="panel-sub">วางข้อความแชร์ภาษาจีน + ลิงก์สั้น Changdu /t/.../ ได้เลย หรือวางลิงก์เต็มและ Book ID</p></div><span class="tiny-mark">AUTO EXTRACT</span></div><div class="content-pad">
+      <div class="textarea-wrap"><textarea id="linkInput" class="paste-input" spellcheck="false" aria-label="วางลิงก์นิยาย" placeholder="https://fanqienovel.com/page/7132121215128308767&#10;https://fanqienovel.com/page/7358745778921147454?source=seo_fq_juhe&#10;推荐一部好书《全都在猜我修为，我直接流言成真》&#10;https://changdunovel.com/t/SLIyyDyz0D4/&#10;&#10;วางข้อความแชร์ทั้งหมดตรงนี้..."></textarea><span class="textarea-count" id="lineCounter">0 บรรทัด</span></div>
       <div class="input-tools"><button class="soft-btn" id="pasteBtn"><svg class="icon"><use href="#i-paste"/></svg> วางจากคลิปบอร์ด</button><button class="soft-btn" id="clearBtn"><svg class="icon"><use href="#i-x"/></svg> ล้างช่อง</button></div>
-      <div class="preview"><div class="preview-head"><span>ผลการสกัด Book ID</span><span class="preview-count" id="previewText">0 รายการ</span></div><div class="chips" id="previewChips"><p class="preview-empty">รอลิงก์ที่คุณวาง ระบบจะแสดง Book ID ที่ตรวจพบตรงนี้</p></div></div>
-      <div class="notice"><svg class="icon"><use href="#i-shield"/></svg><span>เก็บเฉพาะตัวเลข <strong>book_id</strong> ไม่เก็บ URL จากลิงก์แชร์ และจะไม่เพิ่ม ID ที่มีอยู่แล้ว • GitHub Token อยู่บน Cloudflare Worker เท่านั้น</span></div>
-      <div class="save-row"><button id="saveBtn" class="primary"><svg class="icon"><use href="#i-cloud"/></svg> บันทึกลง GitHub</button><button id="downloadBtn" class="soft-btn" title="ดาวน์โหลด JSON"><svg class="icon"><use href="#i-download"/></svg><span>JSON</span></button></div>
+      <div class="preview"><div class="preview-head"><span>ผลการสกัด Book ID</span><span class="preview-count" id="previewText">0 รายการ</span></div><div class="chips" id="previewChips"><p class="preview-empty">รอลิงก์ที่คุณวาง ระบบจะแสดง Book ID ที่ตรวจพบตรงนี้</p></div><div id="shortResolveStatus" class="short-resolve-status" role="status" aria-live="polite" hidden></div></div>
+      <div class="notice"><svg class="icon"><use href="#i-shield"/></svg><span>รองรับ Changdu ลิงก์สั้น <strong>/t/...</strong> โดยให้ Cloudflare ขยายลิงก์ก่อน • บันทึกเฉพาะ <strong>book_id</strong> • ไม่เก็บลิงก์แชร์หรือข้อมูลบัญชีลง JSON</span></div>
+      <div class="save-row"><button id="saveBtn" class="primary"><svg class="icon"><use href="#i-cloud"/></svg><span id="saveBtnLabel">ขยายลิงก์และบันทึก</span></button><button id="downloadBtn" class="soft-btn" title="ดาวน์โหลด JSON"><svg class="icon"><use href="#i-download"/></svg><span>JSON</span></button></div>
     </div></section>
 
     <section class="panel"><div class="panel-head history-head"><div><h2 class="panel-title">คลัง Book ID</h2><p class="panel-sub" id="historySub">รายการจากไฟล์ book_ids.json</p></div><div class="history-actions"><button class="icon-btn" id="refreshBtn" title="รีเฟรชจาก GitHub" aria-label="รีเฟรชจาก GitHub"><svg class="icon"><use href="#i-refresh"/></svg></button><button class="icon-btn" id="copyAllBtn" title="คัดลอก Book ID ทั้งหมด" aria-label="คัดลอก Book ID ทั้งหมด"><svg class="icon"><use href="#i-copy"/></svg></button></div></div>
@@ -210,36 +214,91 @@
       return JSON.stringify({book_ids:clean, copied_ids:clean.filter(id=>selected.has(id))},null,2)+'\n';
     }
 
-    // Each 19-digit book ID is handled as a STRING, never as a JavaScript Number.
+    // IDs are always strings. Changdu /t/ URLs must be resolved by the Worker.
+    const SHORT_RX = /^\/t\/[A-Za-z0-9_-]{4,128}\/?$/;
+    const shortIdCache=new Map();
+    const shortFailures=new Map();
+    let shortResolvePromise=null, autoResolveTimer=null, saveProcessing=false;
     function extractBookIds(text) {
-      const raw = []; let invalid = 0;
-      for (const line of String(text).split(/\r?\n/)) {
-        const cleanLine = line.trim(); if (!cleanLine) continue;
-        const urls = cleanLine.match(/https?:\/\/[^\s<>"'`]+/gi);
-        if (urls && urls.length) {
-          for (let urlString of urls) {
-            urlString = urlString.replace(/[),;，。]+$/, '');
+      const raw=[], shortLinks=[]; let invalid=0;
+      for(const line of String(text).split(/\r?\n/)) {
+        const content=line.trim(); if(!content)continue;
+        const urls=content.match(/https?:\/\/[^\s<>"'`]+/gi);
+        if(urls?.length){
+          for(let s of urls){
+            s=s.replace(/[),;，。\]】]+$/g,'').replace(/\\([&?])/g,'$1');
             try {
-              const url = new URL(urlString);
-              const host = url.hostname.toLowerCase();
-              const qid = url.searchParams.get('book_id');
-              let id = qid && ID_RX.test(qid) ? qid : null;
-              if (!id && (host === 'fanqienovel.com' || host.endsWith('.fanqienovel.com'))) {
-                const match = url.pathname.match(/^\/page\/(\d{15,20})(?:\/|$)/);
-                if (match) id = match[1];
+              const url=new URL(s);const host=url.hostname.toLowerCase();
+              if(['changdunovel.com','www.changdunovel.com'].includes(host)&&SHORT_RX.test(url.pathname)){
+                shortLinks.push('https://changdunovel.com'+(url.pathname.endsWith('/')?url.pathname:url.pathname+'/'));
+                continue;
               }
-              if (id) raw.push(id); else invalid++;
-            } catch (err) { invalid++; }
+              let id=null;
+              if(['changdunovel.com','www.changdunovel.com','fanqienovel.com','www.fanqienovel.com'].includes(host)){
+                const qid=url.searchParams.get('book_id');
+                if(qid&&ID_RX.test(qid))id=qid;
+              }
+              if(!id&&['fanqienovel.com','www.fanqienovel.com'].includes(host)){
+                const m=url.pathname.match(/^\/page\/(\d{15,20})(?:\/|$)/);
+                if(m)id=m[1];
+              }
+              if(id)raw.push(id);else invalid++;
+            }catch(e){invalid++;}
           }
-        } else {
-          const parts = cleanLine.split(/[\s,，;；]+/).filter(Boolean);
-          for (const part of parts) {
-            if (ID_RX.test(part)) raw.push(part); else invalid++;
+        }else {
+          const values=content.split(/[\s,，;；]+/).filter(Boolean);
+          for(const p of values){
+            if(ID_RX.test(p))raw.push(p);
+            else if(!/[^\x00-\x7f]/.test(p))invalid++;
           }
         }
       }
-      const unique = [...new Set(raw)];
-      return { raw, unique, duplicateInPaste: raw.length - unique.length, invalid };
+      return {raw,unique:[...new Set(raw)],shortLinks:[...new Set(shortLinks)],invalid};
+    }
+    function combineParsed(parsed){
+      const combined=parsed.raw.slice();
+      for(const url of parsed.shortLinks)if(shortIdCache.has(url))combined.push(shortIdCache.get(url));
+      return {...parsed,raw:combined,unique:[...new Set(combined)],
+        pending:parsed.shortLinks.filter(url=>!shortIdCache.has(url)),
+        duplicateInPaste:combined.length-new Set(combined).size};
+    }
+    function setResolveStatus(message='',kind=''){
+      const node=$('shortResolveStatus');node.hidden=!message;node.textContent=message;
+      node.classList.toggle('error',kind==='error');node.classList.toggle('ok',kind==='ok');
+    }
+    async function resolveShortLinksFor(text,{force=false}={}){
+      if(shortResolvePromise)await shortResolvePromise;
+      const urls=extractBookIds(text).shortLinks;
+      const need=urls.filter(u=>!shortIdCache.has(u)&&(force||!shortFailures.has(u)));
+      if(!need.length){countInput();return;}
+      if(!state.connected){setResolveStatus('พบลิงก์สั้น '+urls.length+' รายการ • เชื่อมต่อ Cloudflare Worker ก่อนเพื่อขยายลิงก์');return;}
+      shortResolvePromise=(async()=>{
+        for(let i=0;i<need.length;i+=8){
+          const batch=need.slice(i,i+8);
+          setResolveStatus(`กำลังขยายลิงก์สั้น ${Math.min(i+batch.length,need.length)} / ${need.length} ผ่าน Cloudflare...`);
+          let result;
+          try{result=await apiCall('POST','/api/resolve-short-links',{urls:batch});}
+          catch(e){
+            for(const url of batch)shortFailures.set(url,String(e.message||e));
+            continue;
+          }
+          for(const item of result.results||[]){
+            if(!batch.includes(item.url))continue;
+            if(item.ok&&ID_RX.test(String(item.book_id||''))){
+              shortIdCache.set(item.url,String(item.book_id));shortFailures.delete(item.url);
+            }else shortFailures.set(item.url,String(item.message||'ขยายลิงก์ไม่สำเร็จ'));
+          }
+          for(const url of batch)if(!shortIdCache.has(url)&&!shortFailures.has(url))shortFailures.set(url,'เซิร์ฟเวอร์ไม่ส่งผลลัพธ์');
+          countInput();
+        }
+      })();
+      try{await shortResolvePromise;}finally{shortResolvePromise=null;countInput();}
+    }
+    function scheduleAutoResolve(){
+      clearTimeout(autoResolveTimer);
+      autoResolveTimer=setTimeout(()=>{
+        if(state.connected&&!saveProcessing)void resolveShortLinksFor($('linkInput').value);
+      },650);
     }
 
     function showToast(message, error = false) {
@@ -387,32 +446,40 @@
     }
 
     function countInput() {
-      const text = $('linkInput').value;
-      const parsed = extractBookIds(text);
-      const oldIds = new Set(state.ids);
-      const newer = parsed.unique.filter(id => !oldIds.has(id));
-      const dupes = parsed.duplicateInPaste + parsed.unique.length - newer.length;
-      $('totalCount').textContent = state.ids.length.toLocaleString('en-US');
-      $('newCount').textContent = newer.length.toLocaleString('en-US');
-      $('dupeCount').textContent = dupes.toLocaleString('en-US');
-      $('lineCounter').textContent = (text.trim() ? text.trim().split(/\r?\n/).length : 0).toLocaleString('en-US') + ' บรรทัด';
-      $('previewText').textContent = `${parsed.unique.length} ID · ใหม่ ${newer.length} · ซ้ำ ${dupes}${parsed.invalid ? ' · ไม่รองรับ ' + parsed.invalid : ''}`;
-      const container = $('previewChips'); container.replaceChildren();
-      if (!parsed.unique.length) {
-        const p = document.createElement('p'); p.className = 'preview-empty';
-        p.textContent = parsed.invalid ? 'ยังไม่พบ Book ID ที่ถูกต้องจากข้อความนี้' : 'รอลิงก์ที่คุณวาง ระบบจะแสดง Book ID ที่ตรวจพบตรงนี้';
+      const text=$('linkInput').value;
+      const parsed=combineParsed(extractBookIds(text));
+      const oldIds=new Set(state.ids);
+      const newer=parsed.unique.filter(id=>!oldIds.has(id));
+      const dupes=parsed.duplicateInPaste+parsed.unique.length-newer.length;
+      $('totalCount').textContent=state.ids.length.toLocaleString('en-US');
+      $('newCount').textContent=newer.length.toLocaleString('en-US');
+      $('dupeCount').textContent=dupes.toLocaleString('en-US');
+      $('lineCounter').textContent=(text.trim()?text.trim().split(/\r?\n/).length:0).toLocaleString('en-US')+' บรรทัด';
+      $('previewText').textContent=`${parsed.unique.length} ID · ใหม่ ${newer.length} · ซ้ำ ${dupes}`+
+        (parsed.pending.length?` · ลิงก์สั้นรอขยาย ${parsed.pending.length}`:'')+
+        (parsed.invalid?` · ไม่รองรับ ${parsed.invalid}`:'');
+      const container=$('previewChips');container.replaceChildren();
+      if(!parsed.unique.length){
+        const p=document.createElement('p');p.className='preview-empty';
+        p.textContent=parsed.pending.length?'พบลิงก์สั้น Changdu กำลังตรวจหา Book ID...':
+          (parsed.invalid?'ยังไม่พบ Book ID ที่ถูกต้องจากข้อความนี้':'รอลิงก์ที่คุณวาง ระบบจะแสดง Book ID ที่ตรวจพบตรงนี้');
         container.append(p);
-      } else {
-        for (const id of parsed.unique.slice(0, 9)) {
-          const chip = document.createElement('span'); chip.className = 'chip' + (oldIds.has(id) ? ' muted' : '');
-          chip.textContent = id + (oldIds.has(id) ? ' · ซ้ำ' : ''); container.append(chip);
+      }else{
+        for(const id of parsed.unique.slice(0,9)){
+          const chip=document.createElement('span');chip.className='chip'+(oldIds.has(id)?' muted':'');
+          chip.textContent=id+(oldIds.has(id)?' · ซ้ำ':'');container.append(chip);
         }
-        if (parsed.unique.length > 9) {
-          const chip = document.createElement('span'); chip.className = 'chip muted';
-          chip.textContent = `+${parsed.unique.length - 9} รายการ`; container.append(chip);
-        }
+        if(parsed.unique.length>9){const chip=document.createElement('span');chip.className='chip muted';
+          chip.textContent=`+${parsed.unique.length-9} รายการ`;container.append(chip);}
       }
-      return { parsed, newer, dupes };
+      const errors=parsed.pending.filter(url=>shortFailures.has(url));
+      if(errors.length){
+        setResolveStatus(`ขยายลิงก์สั้นไม่สำเร็จ ${errors.length} รายการ: ${shortFailures.get(errors[0])} • ข้อความยังอยู่ครบ กดบันทึกอีกครั้งเพื่อลองใหม่`,'error');
+      }else if(parsed.pending.length){
+        setResolveStatus(`พบลิงก์สั้น ${parsed.shortLinks.length} รายการ • ${state.connected?'กำลังขยายลิงก์อัตโนมัติ':'กรุณาเชื่อมต่อคลังก่อน'} `);
+      }else if(parsed.shortLinks.length){setResolveStatus(`✓ ขยายลิงก์สั้นสำเร็จ ${parsed.shortLinks.length} รายการ พร้อมบันทึก`,'ok');}
+      else setResolveStatus();
+      return {parsed,newer,dupes};
     }
     function addIcon(parent, name, className='icon') {
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', className);
@@ -503,6 +570,7 @@
         else localStorage.removeItem(localKey);
         $('settingsDialog').close();changeStatus();updateSyncBanner();
         if(pendingCount())scheduleFlush(100);
+        if($('linkInput').value.trim())scheduleAutoResolve();
         if(!quiet)showToast('เชื่อมต่อสำเร็จ • '+state.ids.length+' Book ID');
         if(!info.bookFileExists && !quiet)showToast('เชื่อมต่อแล้ว แต่ GitHub ยังไม่มี book_ids.json — บันทึกครั้งแรกเพื่อสร้างไฟล์');
       } catch(err) {
@@ -518,13 +586,26 @@
       try {const data=await apiCall('GET','/api/books');applyData(data);showToast('รีเฟรชสำเร็จ • '+state.ids.length+' Book ID');}
       catch(e){showToast(e.message,true);}finally{setBusy(false);}
     }
-    function save() {
+    async function save() {
       if(!state.connected){openSettings();showToast('เปิดลิงก์ส่วนตัวและเชื่อมต่อคลังก่อน',true);return;}
-      const {parsed}=countInput();
-      if(!parsed.unique.length){showToast('ยังไม่มี Book ID ที่ถูกต้องในช่องข้อความ',true);return;}
-      const added=queueAdd(parsed.unique);
-      $('linkInput').value='';countInput();
-      showToast(added?`เพิ่ม ${added} Book ID ในเครื่องแล้ว • กำลังซิงก์ GitHub`:'ทั้งหมดเป็นรายการซ้ำ ไม่มีรายการใหม่');
+      if(saveProcessing)return;
+      const source=$('linkInput').value;
+      if(!source.trim()){showToast('กรุณาวางลิงก์หรือ Book ID ก่อน',true);return;}
+      saveProcessing=true;$('saveBtn').disabled=true;
+      $('saveBtnLabel').textContent='กำลังตรวจลิงก์สั้น...';
+      try {
+        await resolveShortLinksFor(source,{force:true});
+        if($('linkInput').value!==source){showToast('ข้อความเปลี่ยนระหว่างตรวจลิงก์ กรุณากดบันทึกอีกครั้ง',true);return;}
+        const {parsed}=countInput();
+        if(parsed.pending.length){
+          showToast(`ยังขยายลิงก์สั้นไม่สำเร็จ ${parsed.pending.length} รายการ • ไม่ล้างข้อความ เพื่อให้ลองใหม่ได้`,true);
+          return;
+        }
+        if(!parsed.unique.length){showToast('ยังไม่พบ Book ID ที่ถูกต้องในข้อความ',true);return;}
+        const added=queueAdd(parsed.unique);
+        $('linkInput').value='';countInput();
+        showToast(added?`เพิ่ม ${added} Book ID ในเครื่องแล้ว • กำลังซิงก์ GitHub`:'ทั้งหมดเป็นรายการซ้ำ ไม่มีรายการใหม่');
+      }finally{saveProcessing=false;$('saveBtn').disabled=false;$('saveBtnLabel').textContent='ขยายลิงก์และบันทึก';}
     }
     function openSettings() {
       $('accessKeyInput').value=state.accessKey;
@@ -582,9 +663,9 @@
     $('settingsForm').addEventListener('submit',e=>{e.preventDefault();connect();});
     $('disconnectBtn').addEventListener('click',disconnect);
     $('toggleAccessBtn').addEventListener('click',()=>{const x=$('accessKeyInput');x.type=x.type==='password'?'text':'password';$('toggleAccessBtn').textContent=x.type==='password'?'แสดง':'ซ่อน';});
-    $('linkInput').addEventListener('input',countInput);
-    $('clearBtn').addEventListener('click',()=>{$('linkInput').value='';countInput();$('linkInput').focus();});
-    $('pasteBtn').addEventListener('click',async()=>{try{const txt=await navigator.clipboard.readText();if(!txt)throw new Error();$('linkInput').value+=($('linkInput').value.trim()?'\n':'')+txt;countInput();}catch(e){showToast('อ่านคลิปบอร์ดไม่ได้ กรุณากดวางข้อความเอง',true);}});
+    $('linkInput').addEventListener('input',()=>{countInput();scheduleAutoResolve();});
+    $('clearBtn').addEventListener('click',()=>{clearTimeout(autoResolveTimer);$('linkInput').value='';countInput();$('linkInput').focus();});
+    $('pasteBtn').addEventListener('click',async()=>{try{const txt=await navigator.clipboard.readText();if(!txt)throw new Error();$('linkInput').value+=($('linkInput').value.trim()?'\n':'')+txt;countInput();scheduleAutoResolve();}catch(e){showToast('อ่านคลิปบอร์ดไม่ได้ กรุณากดวางข้อความเอง',true);}});
     $('saveBtn').addEventListener('click',save);
     $('downloadBtn').addEventListener('click',download);
     $('refreshBtn').addEventListener('click',refresh);
